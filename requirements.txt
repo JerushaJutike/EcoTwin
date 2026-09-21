@@ -1,2 +1,4 @@
 numpy
 traci
+gymnasium
+stable-baselines3
