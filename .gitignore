@@ -1,0 +1,32 @@
+﻿# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# SUMO generated simulation outputs
+simulation/sumo/emissions/*.xml
+
+# Generated raw simulation results
+data/raw/tripinfo.xml
+
+# Generated analysis results
+data/results/
+
+# Trained models
+rl/models/trained_model/
+
+# OS files
+.DS_Store
+Thumbs.db
