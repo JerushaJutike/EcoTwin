@@ -68,7 +68,7 @@ class EcoTwinEnv(gym.Env):
 
         self.observation_space = spaces.Box(
             low=0.0,
-            high=np.inf,
+            high=1.0,
             shape=(13,),
             dtype=np.float32,
         )
@@ -247,9 +247,7 @@ class EcoTwinEnv(gym.Env):
             collect_intersection_state()
         )
 
-        observation = (
-            state.as_array()
-        )
+        observation = state.as_normalized_array()
 
         info = {
             "simulation_time": (
@@ -301,9 +299,7 @@ class EcoTwinEnv(gym.Env):
 
         truncated = False
 
-        observation = (
-            state.as_array()
-        )
+        observation = state.as_normalized_array()
 
         info = {
             "simulation_time": (

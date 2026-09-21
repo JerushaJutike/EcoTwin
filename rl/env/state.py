@@ -23,6 +23,11 @@ DIRECTIONS = (
     "west",
 )
 
+# Observation normalization constants
+QUEUE_NORMALIZER = 20.0
+WAIT_NORMALIZER = 400.0
+CO2_NORMALIZER = 60000.0
+
 
 @dataclass
 class IntersectionState:
@@ -33,7 +38,7 @@ class IntersectionState:
 
     def as_array(self) -> np.ndarray:
         """
-        Convert the structured state into a flat RL observation.
+        Return the raw RL observation.
 
         Layout:
         [
@@ -49,7 +54,42 @@ class IntersectionState:
                 self.waiting_times,
                 self.co2_emissions,
                 np.array(
-                    [self.current_green],
+                    [float(self.current_green)],
+                    dtype=np.float32,
+                ),
+            ]
+        ).astype(np.float32)
+
+    def as_normalized_array(self) -> np.ndarray:
+        """
+        Return a normalized observation in the range [0, 1].
+        """
+
+        normalized_queues = np.clip(
+            self.queues / QUEUE_NORMALIZER,
+            0.0,
+            1.0,
+        )
+
+        normalized_waiting = np.clip(
+            self.waiting_times / WAIT_NORMALIZER,
+            0.0,
+            1.0,
+        )
+
+        normalized_co2 = np.clip(
+            self.co2_emissions / CO2_NORMALIZER,
+            0.0,
+            1.0,
+        )
+
+        return np.concatenate(
+            [
+                normalized_queues,
+                normalized_waiting,
+                normalized_co2,
+                np.array(
+                    [float(self.current_green)],
                     dtype=np.float32,
                 ),
             ]
@@ -58,7 +98,7 @@ class IntersectionState:
 
 def get_lane_queue(lane_id: str) -> float:
     """
-    Number of halted vehicles on a lane during the current step.
+    Return the number of halted vehicles on a lane.
     """
     return float(
         traci.lane.getLastStepHaltingNumber(lane_id)
@@ -85,7 +125,7 @@ def get_lane_waiting_time(lane_id: str) -> float:
 
 def get_lane_co2(lane_id: str) -> float:
     """
-    Return current CO2 emission rate for the lane in mg/s.
+    Return current lane CO2 emission rate in mg/s.
     """
     return float(
         traci.lane.getCO2Emission(lane_id)
@@ -94,14 +134,12 @@ def get_lane_co2(lane_id: str) -> float:
 
 def get_current_green() -> int:
     """
-    Encode B1's current traffic-light state.
+    Encode B1's current signal direction.
 
     0 = East/West green
     1 = North/South green
-
-    Yellow transition phases retain the direction they
-    are transitioning away from.
     """
+
     phase = traci.trafficlight.getPhase(TLS_ID)
 
     if phase in (0, 1):
@@ -116,6 +154,10 @@ def get_current_green() -> int:
 
 
 def collect_intersection_state() -> IntersectionState:
+    """
+    Collect the current traffic state around B1.
+    """
+
     queues = []
     waiting_times = []
     co2_emissions = []
