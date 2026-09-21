@@ -16,6 +16,12 @@
         <time-to-teleport value="-1"/>
     </processing>
 
+    <output>
+        <fcd-output value="../emissions/fcd.xml"/>
+        <emission-output value="../emissions/emissions.xml"/>
+        <tripinfo-output value="../../../data/raw/tripinfo.xml"/>
+    </output>
+
     <report>
         <verbose value="true"/>
         <duration-log.disable value="false"/>
