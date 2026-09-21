@@ -1,0 +1,22 @@
+{
+    "baseline": {
+        "average_waiting_time_seconds": 40.384,
+        "total_co2_g": 131535.192,
+        "average_speed_kmh": 22.579,
+        "completed_trips": 500,
+        "simulation_time_seconds": 1167.0
+    },
+    "ppo": {
+        "average_waiting_time_seconds": 29.726,
+        "total_co2_g": 123022.491,
+        "average_speed_kmh": 24.879,
+        "completed_trips": 500,
+        "simulation_time_seconds": 1164.0
+    },
+    "improvements": {
+        "waiting_time_reduction_percent": 26.392,
+        "co2_reduction_percent": 6.472,
+        "average_speed_change_percent": 10.186,
+        "simulation_duration_reduction_percent": 0.257
+    }
+}
