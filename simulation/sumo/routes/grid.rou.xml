@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<routes>
+
+    <!-- Vehicle type -->
+    <vType
+        id="car"
+        accel="2.6"
+        decel="4.5"
+        sigma="0.5"
+        length="5"
+        minGap="2.5"
+        maxSpeed="13.89"
+        guiShape="passenger"
+    />
+
+    <!-- Routes -->
+    <route id="route_W_E" edges="W_J1 J1_J2 J2_E"/>
+    <route id="route_E_W" edges="E_J2 J2_J1 J1_W"/>
+    <route id="route_S_N" edges="S_J1 J1_J3 J3_N"/>
+    <route id="route_N_S" edges="N_J3 J3_J1 J1_S"/>
+
+    <!-- Vehicles -->
+    <vehicle id="veh_W_E_1" type="car" route="route_W_E" depart="0"/>
+    <vehicle id="veh_E_W_1" type="car" route="route_E_W" depart="10"/>
+    <vehicle id="veh_S_N_1" type="car" route="route_S_N" depart="20"/>
+    <vehicle id="veh_N_S_1" type="car" route="route_N_S" depart="30"/>
+
+    <vehicle id="veh_W_E_2" type="car" route="route_W_E" depart="40"/>
+    <vehicle id="veh_E_W_2" type="car" route="route_E_W" depart="50"/>
+    <vehicle id="veh_S_N_2" type="car" route="route_S_N" depart="60"/>
+    <vehicle id="veh_N_S_2" type="car" route="route_N_S" depart="70"/>
+
+</routes>
