@@ -10,6 +10,7 @@ class EcoTwinEnv:
     - vehicle observations
     - CO2 observations
     - traffic-light actions
+    - normalized reward calculation
     """
 
     def __init__(self, sumo_config="simulation/sumo/config/grid.sumocfg"):
@@ -25,6 +26,13 @@ class EcoTwinEnv:
 
         # Number of SUMO seconds between RL decisions
         self.decision_interval = 10
+
+        # Previous state used for reward calculation
+        self.previous_state = None
+
+        # Reward weights
+        self.waiting_weight = 0.6
+        self.co2_weight = 0.4
 
     def start(self):
         """Start the SUMO simulation through TraCI."""
@@ -76,6 +84,45 @@ class EcoTwinEnv:
             "traffic_light_phase": current_phase,
         }
 
+    def calculate_reward(self, state):
+        """
+        Calculate a normalized reward using changes in waiting time and CO2.
+
+        Lower waiting time and lower CO2 produce a better reward.
+        """
+
+        if self.previous_state is None:
+            self.previous_state = state
+            return 0.0
+
+        previous_waiting = self.previous_state["waiting_time"]
+        previous_co2 = self.previous_state["co2"]
+
+        waiting_change = (
+            state["waiting_time"]
+            - previous_waiting
+        )
+
+        co2_change = (
+            state["co2"]
+            - previous_co2
+        )
+
+        waiting_score = waiting_change / max(previous_waiting, 1.0)
+        co2_score = co2_change / max(previous_co2, 1.0)
+
+        waiting_score = max(-1.0, min(1.0, waiting_score))
+        co2_score = max(-1.0, min(1.0, co2_score))
+
+        reward = (
+            -self.waiting_weight * waiting_score
+            -self.co2_weight * co2_score
+        )
+
+        self.previous_state = state
+
+        return reward
+
     def apply_action(self, action):
         """Apply an RL action to traffic light J1."""
 
@@ -96,7 +143,9 @@ class EcoTwinEnv:
 
         state = self.get_state()
 
-        return state
+        reward = self.calculate_reward(state)
+
+        return state, reward
 
     def close(self):
         """Close the SUMO/TraCI connection."""
