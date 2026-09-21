@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-09-21T21:17:38.694635+05:30 by Eclipse SUMO GUI 1.27.1
+<!-- generated on 2026-09-21T21:50:00.743430+05:30 by Eclipse SUMO sumo 1.27.1
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
@@ -29,24 +29,11 @@
     </report>
 
     <traci_server>
-        <remote-port value="60072"/>
+        <remote-port value="56476"/>
     </traci_server>
-
-    <gui_only>
-        <start value="true"/>
-    </gui_only>
 
 </sumoConfiguration>
 -->
 
 <tripinfos xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tripinfo_file.xsd">
-    <tripinfo id="13" depart="26.00" departLane="A1A0_0" departPos="5.10" departSpeed="13.89" departDelay="0.00" arrival="39.00" arrivalLane="A1A0_0" arrivalPos="189.60" arrivalSpeed="14.45" duration="13.00" routeLength="184.50" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="0.45" rerouteNo="0" devices="tripinfo_13 emissions_13" vType="DEFAULT_VEHTYPE" speedFactor="1.12" vaporized="">
-        <emissions CO_abs="243.51" CO2_abs="27559.61" HC_abs="1.63" PMx_abs="3.04" NOx_abs="10.20" fuel_abs="8934.44" electricity_abs="0.00"/>
-    </tripinfo>
-    <tripinfo id="6" depart="12.00" departLane="A0A1_0" departPos="5.10" departSpeed="13.89" departDelay="0.00" arrival="42.00" arrivalLane="A1B1_0" arrivalPos="185.60" arrivalSpeed="13.29" duration="30.00" routeLength="379.13" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="2.61" rerouteNo="0" devices="tripinfo_6 emissions_6" vType="DEFAULT_VEHTYPE" speedFactor="1.05" vaporized="">
-        <emissions CO_abs="493.86" CO2_abs="73851.71" HC_abs="3.30" PMx_abs="7.92" NOx_abs="25.97" fuel_abs="23941.73" electricity_abs="0.00"/>
-    </tripinfo>
-    <tripinfo id="1" depart="2.00" departLane="A2B2_0" departPos="5.10" departSpeed="13.03" departDelay="0.00" arrival="56.00" arrivalLane="A2A1_0" arrivalPos="189.60" arrivalSpeed="12.51" duration="54.00" routeLength="576.11" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="7.64" rerouteNo="0" devices="tripinfo_1 emissions_1" vType="DEFAULT_VEHTYPE" speedFactor="0.94" vaporized="">
-        <emissions CO_abs="642.97" CO2_abs="129161.06" HC_abs="4.30" PMx_abs="13.36" NOx_abs="44.01" fuel_abs="41872.33" electricity_abs="0.00"/>
-    </tripinfo>
 </tripinfos>
