@@ -1,0 +1,14 @@
+{
+    "controller": "SUMO fixed-time",
+    "simulation_time_seconds": 1167.0,
+    "simulation_steps": 1167,
+    "unique_vehicles": 500,
+    "departed_vehicles": 500,
+    "completed_trips": 500,
+    "total_co2_mg": 131535191.6,
+    "total_co2_g": 131535.192,
+    "total_waiting_time_seconds": 20192.0,
+    "average_waiting_time_seconds": 40.384,
+    "average_speed_mps": 6.272,
+    "average_speed_kmh": 22.579
+}
