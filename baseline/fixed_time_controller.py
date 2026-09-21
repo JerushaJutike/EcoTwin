@@ -1,5 +1,7 @@
 import traci
 
+from baseline_results import BaselineResults
+
 
 class FixedTimeController:
     """
@@ -65,17 +67,16 @@ class FixedTimeController:
 
                 speed_samples += 1
 
-        average_speed = (
-            total_speed / speed_samples
-            if speed_samples > 0
-            else 0.0
-        )
+        if speed_samples > 0:
+            average_speed = total_speed / speed_samples
+        else:
+            average_speed = 0.0
 
-        return {
-            "total_waiting_time": total_waiting_time,
-            "total_co2": total_co2,
-            "average_speed": average_speed,
-        }
+        return BaselineResults(
+            total_waiting_time=total_waiting_time,
+            total_co2=total_co2,
+            average_speed=average_speed,
+        )
 
     def close(self):
         """Close the SUMO/TraCI connection."""
@@ -91,20 +92,7 @@ if __name__ == "__main__":
 
         results = controller.run()
 
-        print("\nFixed-Time Baseline Results")
-        print("---------------------------")
-        print(
-            "Total waiting time:",
-            results["total_waiting_time"],
-        )
-        print(
-            "Total CO2:",
-            results["total_co2"],
-        )
-        print(
-            "Average speed:",
-            results["average_speed"],
-        )
+        results.display()
 
     finally:
         controller.close()
