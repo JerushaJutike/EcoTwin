@@ -1,0 +1,18 @@
+{
+    "controller": "PPO",
+    "model": "ppo_b1_initial.zip",
+    "simulation_time_seconds": 1164.0,
+    "simulation_steps": 1164,
+    "unique_vehicles": 500,
+    "departed_vehicles": 500,
+    "completed_trips": 500,
+    "total_co2_mg": 123022491.2,
+    "total_co2_g": 123022.491,
+    "total_waiting_time_seconds": 14863.0,
+    "average_waiting_time_seconds": 29.726,
+    "average_speed_mps": 6.911,
+    "average_speed_kmh": 24.879,
+    "ppo_decisions": 78,
+    "action_0_count": 38,
+    "action_1_count": 40
+}
