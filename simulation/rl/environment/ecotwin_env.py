@@ -1,9 +1,7 @@
 import traci
 
 from simulation.rl.problem_definition import (
-    ACTIONS,
     get_state as build_rl_state,
-    calculate_reward as base_reward,
 )
 
 
@@ -18,6 +16,7 @@ class EcoTwinEnv:
     - RL state generation
     - traffic-light actions
     - reward calculation
+    - environment reset
     """
 
     def __init__(self, sumo_config="simulation/sumo/config/grid.sumocfg"):
@@ -41,14 +40,41 @@ class EcoTwinEnv:
         self.waiting_weight = 0.6
         self.co2_weight = 0.4
 
+        # Track whether SUMO is currently running
+        self.is_running = False
+
     def start(self):
         """Start the SUMO simulation through TraCI."""
+
+        if self.is_running:
+            return
 
         traci.start([
             "sumo",
             "-c",
             self.sumo_config
         ])
+
+        self.is_running = True
+
+    def reset(self):
+        """
+        Reset the RL environment.
+
+        A reset starts a fresh SUMO simulation and
+        returns the initial RL state.
+        """
+
+        if self.is_running:
+            self.close()
+
+        self.previous_state = None
+
+        self.start()
+
+        state = self.get_state()
+
+        return state
 
     def get_state(self):
         """
@@ -191,10 +217,14 @@ class EcoTwinEnv:
         by the decision interval.
         """
 
+        if not self.is_running:
+            raise RuntimeError(
+                "Environment is not running. Call reset() or start() first."
+            )
+
         self.apply_action(action)
 
         for _ in range(self.decision_interval):
-
             traci.simulationStep()
 
         state = self.get_state()
@@ -206,4 +236,8 @@ class EcoTwinEnv:
     def close(self):
         """Close the SUMO/TraCI connection."""
 
-        traci.close()
+        if self.is_running:
+
+            traci.close()
+
+            self.is_running = False
