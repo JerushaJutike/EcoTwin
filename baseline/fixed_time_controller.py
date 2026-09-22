@@ -68,7 +68,9 @@ class FixedTimeController:
                 speed_samples += 1
 
         if speed_samples > 0:
-            average_speed = total_speed / speed_samples
+            average_speed = (
+                total_speed / speed_samples
+            )
         else:
             average_speed = 0.0
 
@@ -93,6 +95,10 @@ if __name__ == "__main__":
         results = controller.run()
 
         results.display()
+
+        results.save()
+
+        print("\nBaseline results saved successfully.")
 
     finally:
         controller.close()

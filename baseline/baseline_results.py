@@ -1,6 +1,10 @@
+import json
+import os
+
+
 class BaselineResults:
     """
-    Stores and formats baseline traffic-control results.
+    Stores, formats, and saves baseline traffic-control results.
     """
 
     def __init__(
@@ -23,6 +27,23 @@ class BaselineResults:
             "total_co2": self.total_co2,
             "average_speed": self.average_speed,
         }
+
+    def save(self, output_path="data/results/baseline_results.json"):
+        """
+        Save baseline results as a JSON file.
+        """
+
+        directory = os.path.dirname(output_path)
+
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+
+        with open(output_path, "w", encoding="utf-8") as file:
+            json.dump(
+                self.to_dict(),
+                file,
+                indent=4,
+            )
 
     def display(self):
         """
