@@ -1,5 +1,11 @@
 import traci
 
+from simulation.rl.problem_definition import (
+    ACTIONS,
+    get_state as build_rl_state,
+    calculate_reward as base_reward,
+)
+
 
 class EcoTwinEnv:
     """
@@ -9,8 +15,9 @@ class EcoTwinEnv:
     - traffic-light observation
     - vehicle observations
     - CO2 observations
+    - RL state generation
     - traffic-light actions
-    - normalized reward calculation
+    - reward calculation
     """
 
     def __init__(self, sumo_config="simulation/sumo/config/grid.sumocfg"):
@@ -36,6 +43,7 @@ class EcoTwinEnv:
 
     def start(self):
         """Start the SUMO simulation through TraCI."""
+
         traci.start([
             "sumo",
             "-c",
@@ -43,13 +51,19 @@ class EcoTwinEnv:
         ])
 
     def get_state(self):
-        """Collect the current traffic state from SUMO."""
+        """
+        Collect the current traffic state from SUMO.
+
+        The returned dictionary contains the detailed
+        traffic information used by EcoTwin.
+        """
 
         vehicle_ids = traci.vehicle.getIDList()
 
         vehicle_count = len(vehicle_ids)
 
         if vehicle_count > 0:
+
             speeds = [
                 traci.vehicle.getSpeed(vehicle_id)
                 for vehicle_id in vehicle_ids
@@ -70,11 +84,21 @@ class EcoTwinEnv:
             total_co2 = sum(co2_values)
 
         else:
+
             average_speed = 0.0
             total_waiting_time = 0.0
             total_co2 = 0.0
 
         current_phase = traci.trafficlight.getPhase("J1")
+
+        # Build the centralized RL observation
+        rl_state = build_rl_state(
+            total_waiting_time,
+            average_speed,
+            vehicle_count,
+            total_co2,
+            current_phase,
+        )
 
         return {
             "vehicle_count": vehicle_count,
@@ -82,17 +106,24 @@ class EcoTwinEnv:
             "waiting_time": total_waiting_time,
             "co2": total_co2,
             "traffic_light_phase": current_phase,
+
+            # Centralized RL observation
+            "rl_state": rl_state,
         }
 
     def calculate_reward(self, state):
         """
-        Calculate a normalized reward using changes in waiting time and CO2.
+        Calculate a normalized reward using changes
+        in waiting time and CO2.
 
-        Lower waiting time and lower CO2 produce a better reward.
+        Lower waiting time and lower CO2
+        produce a better reward.
         """
 
         if self.previous_state is None:
+
             self.previous_state = state
+
             return 0.0
 
         previous_waiting = self.previous_state["waiting_time"]
@@ -108,11 +139,25 @@ class EcoTwinEnv:
             - previous_co2
         )
 
-        waiting_score = waiting_change / max(previous_waiting, 1.0)
-        co2_score = co2_change / max(previous_co2, 1.0)
+        waiting_score = (
+            waiting_change
+            / max(previous_waiting, 1.0)
+        )
 
-        waiting_score = max(-1.0, min(1.0, waiting_score))
-        co2_score = max(-1.0, min(1.0, co2_score))
+        co2_score = (
+            co2_change
+            / max(previous_co2, 1.0)
+        )
+
+        waiting_score = max(
+            -1.0,
+            min(1.0, waiting_score)
+        )
+
+        co2_score = max(
+            -1.0,
+            min(1.0, co2_score)
+        )
 
         reward = (
             -self.waiting_weight * waiting_score
@@ -124,21 +169,32 @@ class EcoTwinEnv:
         return reward
 
     def apply_action(self, action):
-        """Apply an RL action to traffic light J1."""
+        """
+        Apply an RL action to traffic light J1.
+        """
 
         if action not in self.actions:
-            raise ValueError("Action must be 0 or 1.")
+            raise ValueError(
+                "Action must be 0 or 1."
+            )
 
         target_phase = self.actions[action]
 
-        traci.trafficlight.setPhase("J1", target_phase)
+        traci.trafficlight.setPhase(
+            "J1",
+            target_phase
+        )
 
     def step(self, action):
-        """Apply an action and advance SUMO by the decision interval."""
+        """
+        Apply an action and advance SUMO
+        by the decision interval.
+        """
 
         self.apply_action(action)
 
         for _ in range(self.decision_interval):
+
             traci.simulationStep()
 
         state = self.get_state()
@@ -149,4 +205,5 @@ class EcoTwinEnv:
 
     def close(self):
         """Close the SUMO/TraCI connection."""
+
         traci.close()
