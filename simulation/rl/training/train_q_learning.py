@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from simulation.rl.environment.ecotwin_env import EcoTwinEnv
 from simulation.rl.agents.q_learning_agent import QLearningAgent
 
@@ -56,6 +59,39 @@ def main():
 
         print("\nQ-learning training completed.")
         print(f"Total learned states: {len(agent.q_table)}")
+
+        # Save the learned Q-table
+        model_directory = Path(
+            "simulation/rl/models/trained_model"
+        )
+
+        model_directory.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        model_path = model_directory / "q_learning_model.json"
+
+        saved_q_table = {
+            str(state): values
+            for state, values in agent.q_table.items()
+        }
+
+        with open(model_path, "w") as model_file:
+            json.dump(
+                {
+                    "algorithm": "Q-learning",
+                    "action_count": agent.action_count,
+                    "learning_rate": agent.learning_rate,
+                    "discount_factor": agent.discount_factor,
+                    "exploration_rate": agent.exploration_rate,
+                    "states": saved_q_table,
+                },
+                model_file,
+                indent=4,
+            )
+
+        print(f"\nTrained model saved to: {model_path}")
 
     except Exception as error:
         print("\nQ-learning training failed.")
