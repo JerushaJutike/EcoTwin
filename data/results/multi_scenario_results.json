@@ -1,0 +1,185 @@
+{
+    "scenario_seeds": [
+        11,
+        22,
+        33,
+        44,
+        55
+    ],
+    "number_of_scenarios": 5,
+    "baseline_runs": [
+        {
+            "controller": "fixed_time",
+            "seed": 11,
+            "simulation_time_seconds": 1169.0,
+            "simulation_steps": 1169,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 129876.739,
+            "total_waiting_time_seconds": 21046.0,
+            "average_waiting_time_seconds": 42.092,
+            "average_speed_kmh": 21.916
+        },
+        {
+            "controller": "fixed_time",
+            "seed": 22,
+            "simulation_time_seconds": 1163.0,
+            "simulation_steps": 1163,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 125706.886,
+            "total_waiting_time_seconds": 18366.0,
+            "average_waiting_time_seconds": 36.732,
+            "average_speed_kmh": 23.57
+        },
+        {
+            "controller": "fixed_time",
+            "seed": 33,
+            "simulation_time_seconds": 1183.0,
+            "simulation_steps": 1183,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 123081.39,
+            "total_waiting_time_seconds": 17733.0,
+            "average_waiting_time_seconds": 35.466,
+            "average_speed_kmh": 23.572
+        },
+        {
+            "controller": "fixed_time",
+            "seed": 44,
+            "simulation_time_seconds": 1119.0,
+            "simulation_steps": 1119,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 119532.519,
+            "total_waiting_time_seconds": 15894.0,
+            "average_waiting_time_seconds": 31.788,
+            "average_speed_kmh": 24.804
+        },
+        {
+            "controller": "fixed_time",
+            "seed": 55,
+            "simulation_time_seconds": 1233.0,
+            "simulation_steps": 1233,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 125041.741,
+            "total_waiting_time_seconds": 17744.0,
+            "average_waiting_time_seconds": 35.488,
+            "average_speed_kmh": 23.695
+        }
+    ],
+    "ppo_runs": [
+        {
+            "controller": "ppo",
+            "seed": 11,
+            "simulation_time_seconds": 1158.0,
+            "simulation_steps": 1158,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 118879.447,
+            "total_waiting_time_seconds": 14764.0,
+            "average_waiting_time_seconds": 29.528,
+            "average_speed_kmh": 24.938
+        },
+        {
+            "controller": "ppo",
+            "seed": 22,
+            "simulation_time_seconds": 1162.0,
+            "simulation_steps": 1162,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 118107.901,
+            "total_waiting_time_seconds": 14125.0,
+            "average_waiting_time_seconds": 28.25,
+            "average_speed_kmh": 25.646
+        },
+        {
+            "controller": "ppo",
+            "seed": 33,
+            "simulation_time_seconds": 1168.0,
+            "simulation_steps": 1168,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 114921.108,
+            "total_waiting_time_seconds": 12953.0,
+            "average_waiting_time_seconds": 25.906,
+            "average_speed_kmh": 26.018
+        },
+        {
+            "controller": "ppo",
+            "seed": 44,
+            "simulation_time_seconds": 1118.0,
+            "simulation_steps": 1118,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 111956.029,
+            "total_waiting_time_seconds": 11754.0,
+            "average_waiting_time_seconds": 23.508,
+            "average_speed_kmh": 27.235
+        },
+        {
+            "controller": "ppo",
+            "seed": 55,
+            "simulation_time_seconds": 1143.0,
+            "simulation_steps": 1143,
+            "unique_vehicles": 500,
+            "departed_vehicles": 500,
+            "completed_trips": 500,
+            "total_co2_g": 122890.164,
+            "total_waiting_time_seconds": 15732.0,
+            "average_waiting_time_seconds": 31.464,
+            "average_speed_kmh": 24.37
+        }
+    ],
+    "baseline_summary": {
+        "average_waiting_time_seconds": {
+            "mean": 36.313,
+            "std": 3.723
+        },
+        "total_co2_g": {
+            "mean": 124647.855,
+            "std": 3782.803
+        },
+        "average_speed_kmh": {
+            "mean": 23.511,
+            "std": 1.032
+        },
+        "simulation_time_seconds": {
+            "mean": 1173.4,
+            "std": 41.022
+        }
+    },
+    "ppo_summary": {
+        "average_waiting_time_seconds": {
+            "mean": 27.731,
+            "std": 3.106
+        },
+        "total_co2_g": {
+            "mean": 117350.93,
+            "std": 4141.3
+        },
+        "average_speed_kmh": {
+            "mean": 25.641,
+            "std": 1.095
+        },
+        "simulation_time_seconds": {
+            "mean": 1149.8,
+            "std": 20.03
+        }
+    },
+    "mean_improvements": {
+        "waiting_time_reduction_percent": 23.633,
+        "co2_reduction_percent": 5.854,
+        "average_speed_increase_percent": 9.06
+    }
+}
