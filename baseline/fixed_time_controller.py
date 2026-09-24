@@ -1,6 +1,6 @@
 import traci
 
-from baseline_results import BaselineResults
+from baseline.baseline_results import BaselineResults
 
 
 class FixedTimeController:
