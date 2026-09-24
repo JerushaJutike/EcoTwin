@@ -8,6 +8,10 @@ from backend.services.results_service import (
     get_result,
 )
 
+from backend.services.simulation_service import (
+    simulation_service,
+)
+
 
 app = FastAPI(
     title="EcoTwin API",
@@ -85,3 +89,38 @@ def result_by_type(
             status_code=404,
             detail=str(error),
         )
+
+
+@app.get("/api/simulation/status")
+def simulation_status() -> dict:
+    return simulation_service.get_status()
+
+
+@app.post("/api/simulation/start")
+def start_simulation() -> dict:
+    started = simulation_service.start()
+
+    if not started:
+        raise HTTPException(
+            status_code=409,
+            detail="Simulation is already running.",
+        )
+
+    return {
+        "message": "Simulation started.",
+    }
+
+
+@app.post("/api/simulation/stop")
+def stop_simulation() -> dict:
+    stopped = simulation_service.stop()
+
+    if not stopped:
+        raise HTTPException(
+            status_code=409,
+            detail="Simulation is not running.",
+        )
+
+    return {
+        "message": "Simulation stop requested.",
+    }
