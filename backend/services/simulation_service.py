@@ -62,6 +62,14 @@ class SimulationService:
             "action_1_count": 0,
             "status": "stopped",
             "error": None,
+            "vehicles": [],
+            "traffic_light": {
+                "id": TLS_ID,
+                "phase": 0,
+                "state": "",
+            },
+            "total_co2_mg_s": 0.0,
+            "average_speed_mps": 0.0,
         }
 
     def get_status(self) -> dict[str, Any]:
@@ -181,23 +189,101 @@ class SimulationService:
                 traci.simulation.getArrivedIDList()
             )
 
-            active_vehicles = len(
+            vehicle_ids = list(
                 traci.vehicle.getIDList()
             )
 
-            simulation_time = (
-                traci.simulation.getTime()
+            vehicles: list[dict[str, Any]] = []
+
+            total_co2_mg_s = 0.0
+            total_speed = 0.0
+
+            for vehicle_id in vehicle_ids:
+                x, y = (
+                    traci.vehicle.getPosition(
+                        vehicle_id
+                    )
+                )
+
+                speed = (
+                    traci.vehicle.getSpeed(
+                        vehicle_id
+                    )
+                )
+
+                co2 = (
+                    traci.vehicle.getCO2Emission(
+                        vehicle_id
+                    )
+                )
+
+                total_speed += speed
+                total_co2_mg_s += co2
+
+                vehicles.append(
+                    {
+                        "id": vehicle_id,
+                        "x": round(x, 2),
+                        "y": round(y, 2),
+                        "speed_mps": round(
+                            speed,
+                            3,
+                        ),
+                        "co2_mg_s": round(
+                            co2,
+                            3,
+                        ),
+                    }
+                )
+
+            if vehicle_ids:
+                average_speed_mps = (
+                    total_speed
+                    / len(vehicle_ids)
+                )
+            else:
+                average_speed_mps = 0.0
+
+            traffic_light_phase = (
+                traci.trafficlight.getPhase(
+                    TLS_ID
+                )
+            )
+
+            traffic_light_state = (
+                traci.trafficlight
+                .getRedYellowGreenState(
+                    TLS_ID
+                )
             )
 
             self._update_state(
-                simulation_time=simulation_time,
-                active_vehicles=active_vehicles,
+                simulation_time=(
+                    traci.simulation.getTime()
+                ),
+                active_vehicles=len(
+                    vehicle_ids
+                ),
                 departed_vehicles=departed_total,
                 arrived_vehicles=arrived_total,
+                vehicles=vehicles,
+                traffic_light={
+                    "id": TLS_ID,
+                    "phase": traffic_light_phase,
+                    "state": traffic_light_state,
+                },
+                total_co2_mg_s=round(
+                    total_co2_mg_s,
+                    3,
+                ),
+                average_speed_mps=round(
+                    average_speed_mps,
+                    3,
+                ),
             )
 
-            # Slow down execution so the API/frontend
-            # can observe the simulation progressing.
+            # Slow the simulation enough for API/WebSocket
+            # clients to observe live changes.
             time.sleep(0.05)
 
         return (
@@ -212,19 +298,6 @@ class SimulationService:
         departed_total: int,
         arrived_total: int,
     ) -> tuple[int, int, int]:
-        """
-        Apply one PPO decision.
-
-        Action 0:
-            East/West green.
-
-        Action 1:
-            North/South green.
-
-        When switching direction, apply the appropriate
-        yellow phase before activating the new green.
-        """
-
         if new_action == current_action:
             self._set_green(
                 new_action
@@ -330,6 +403,14 @@ class SimulationService:
             action_1_count=0,
             controller=self._controller,
             error=None,
+            vehicles=[],
+            traffic_light={
+                "id": TLS_ID,
+                "phase": 0,
+                "state": "",
+            },
+            total_co2_mg_s=0.0,
+            average_speed_mps=0.0,
         )
 
         departed_total = 0

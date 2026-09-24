@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
+import asyncio
+
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.services.results_service import (
@@ -19,7 +26,7 @@ app = FastAPI(
         "Backend API for the EcoTwin urban traffic "
         "and carbon optimization platform."
     ),
-    version="0.1.0",
+    version="0.2.0",
 )
 
 
@@ -38,7 +45,7 @@ app.add_middleware(
 def root() -> dict:
     return {
         "name": "EcoTwin API",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "status": "running",
     }
 
@@ -57,6 +64,7 @@ def project_status() -> dict:
         "simulation": "SUMO",
         "controller": "PPO",
         "backend": "FastAPI",
+        "websocket": True,
         "status": "ready",
     }
 
@@ -103,7 +111,9 @@ def start_simulation() -> dict:
     if not started:
         raise HTTPException(
             status_code=409,
-            detail="Simulation is already running.",
+            detail=(
+                "Simulation is already running."
+            ),
         )
 
     return {
@@ -118,17 +128,21 @@ def stop_simulation() -> dict:
     if not stopped:
         raise HTTPException(
             status_code=409,
-            detail="Simulation is not running.",
+            detail=(
+                "Simulation is not running."
+            ),
         )
 
     return {
-        "message": "Simulation stop requested.",
+        "message": (
+            "Simulation stop requested."
+        ),
     }
 
 
-
-
-@app.post("/api/simulation/controller/{controller}")
+@app.post(
+    "/api/simulation/controller/{controller}"
+)
 def set_simulation_controller(
     controller: str,
 ) -> dict:
@@ -151,7 +165,32 @@ def set_simulation_controller(
 
     return {
         "message": (
-            f"Controller set to {controller}."
+            f"Controller set to "
+            f"{controller}."
         ),
         "controller": controller,
     }
+
+
+@app.websocket("/ws/simulation")
+async def simulation_websocket(
+    websocket: WebSocket,
+) -> None:
+    await websocket.accept()
+
+    try:
+        while True:
+            snapshot = (
+                simulation_service.get_status()
+            )
+
+            await websocket.send_json(
+                snapshot
+            )
+
+            await asyncio.sleep(
+                0.25
+            )
+
+    except WebSocketDisconnect:
+        pass
