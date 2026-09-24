@@ -1,7 +1,12 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
+from backend.services.results_service import (
+    get_all_results,
+    get_result,
+)
 
 
 app = FastAPI(
@@ -50,3 +55,33 @@ def project_status() -> dict:
         "backend": "FastAPI",
         "status": "ready",
     }
+
+
+@app.get("/api/results")
+def all_results() -> dict:
+    return get_all_results()
+
+
+@app.get("/api/results/{result_type}")
+def result_by_type(
+    result_type: str,
+) -> dict:
+    try:
+        return get_result(
+            result_type
+        )
+
+    except KeyError:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Unknown result type: "
+                f"{result_type}"
+            ),
+        )
+
+    except FileNotFoundError as error:
+        raise HTTPException(
+            status_code=404,
+            detail=str(error),
+        )
