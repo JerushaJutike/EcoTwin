@@ -1,3 +1,5 @@
+import SimulationControls from "./components/SimulationControls";
+
 import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
@@ -346,7 +348,11 @@ function App() {
 
 
       <main className="dashboard">
-
+            <SimulationControls
+              running={snapshot.running}
+              controller={snapshot.controller}
+              status={snapshot.status}
+/>
         {/* LIVE METRICS */}
 
         <section className="metrics-grid">
