@@ -1,6 +1,6 @@
 numpy
 traci
 gymnasium
-stable-baselines3
+stable-baselines3[extra]
 fastapi
 uvicorn[standard]
