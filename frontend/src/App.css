@@ -1,0 +1,507 @@
+:root {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background: #07110f;
+  color: #eef7f3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at top,
+      #102a24 0%,
+      #07110f 45%,
+      #050a09 100%
+    );
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding:
+    22px
+    32px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  background:
+    rgba(
+      5,
+      14,
+      12,
+      0.9
+    );
+
+  backdrop-filter: blur(12px);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+}
+
+.topbar p {
+  margin:
+    4px
+    0
+    0;
+
+  color: #8fa9a0;
+  font-size: 13px;
+}
+
+.connection {
+  padding:
+    8px
+    12px;
+
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.connection.online {
+  color: #78f0b0;
+  background:
+    rgba(
+      52,
+      211,
+      153,
+      0.12
+    );
+}
+
+.connection.offline {
+  color: #ff9494;
+  background:
+    rgba(
+      248,
+      113,
+      113,
+      0.12
+    );
+}
+
+.dashboard {
+  padding: 28px;
+  max-width: 1500px;
+  margin: auto;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      6,
+      minmax(0, 1fr)
+    );
+
+  gap: 14px;
+
+  margin-bottom: 20px;
+}
+
+.metrics-grid.secondary {
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  margin-top: 20px;
+}
+
+.metric-card {
+  padding: 18px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  border-radius: 14px;
+
+  background:
+    rgba(
+      13,
+      29,
+      25,
+      0.82
+    );
+
+  box-shadow:
+    0
+    12px
+    32px
+    rgba(
+      0,
+      0,
+      0,
+      0.18
+    );
+}
+
+.metric-card span {
+  display: block;
+
+  color: #8fa9a0;
+
+  font-size: 12px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.08em;
+
+  margin-bottom: 8px;
+}
+
+.metric-card strong {
+  font-size: 24px;
+}
+
+.content-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(320px, 1fr);
+
+  gap: 20px;
+}
+
+.panel {
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  border-radius: 16px;
+
+  background:
+    rgba(
+      10,
+      24,
+      21,
+      0.88
+    );
+
+  overflow: hidden;
+}
+
+.panel-heading {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items: center;
+
+  padding:
+    18px
+    20px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+}
+
+.panel-heading h2 {
+  margin: 0;
+
+  font-size: 18px;
+}
+
+.panel-heading p {
+  margin:
+    4px
+    0
+    0;
+
+  font-size: 12px;
+
+  color: #829b92;
+}
+
+.status-badge {
+  padding:
+    6px
+    10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(
+      45,
+      212,
+      191,
+      0.12
+    );
+
+  color: #77e5d0;
+
+  font-size: 12px;
+
+  text-transform:
+    uppercase;
+}
+
+.map-wrapper {
+  padding: 18px;
+}
+
+.traffic-map {
+  width: 100%;
+
+  min-height: 520px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(
+        18,
+        46,
+        39,
+        0.95
+      ),
+      rgba(
+        8,
+        19,
+        17,
+        0.95
+      )
+    );
+
+  border-radius: 12px;
+}
+
+.road {
+  stroke: #546c64;
+
+  stroke-width: 2.2;
+
+  stroke-linecap: round;
+}
+
+.vehicle-dot {
+  fill: #7ff7b7;
+
+  stroke: #03110b;
+
+  stroke-width: 0.3;
+}
+
+.b1-node {
+  fill: #f9c74f;
+
+  stroke: #111;
+
+  stroke-width: 0.5;
+}
+
+.b1-label {
+  fill: white;
+
+  font-size: 4px;
+
+  font-weight: 700;
+}
+
+.control-panel {
+  min-height: 100%;
+}
+
+.controller-state {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 12px;
+
+  padding: 20px;
+}
+
+.signal-box {
+  padding: 16px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.035
+    );
+
+  border-radius: 12px;
+}
+
+.signal-box span {
+  display: block;
+
+  color: #849d94;
+
+  font-size: 11px;
+
+  text-transform:
+    uppercase;
+
+  margin-bottom: 6px;
+}
+
+.signal-box strong {
+  font-size: 18px;
+}
+
+.decision-bars {
+  padding:
+    0
+    20px
+    20px;
+}
+
+.decision-row {
+  margin-top: 20px;
+}
+
+.decision-header {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  font-size: 13px;
+
+  margin-bottom: 8px;
+}
+
+.decision-track {
+  height: 8px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  border-radius: 999px;
+
+  overflow: hidden;
+}
+
+.decision-fill {
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #36d399,
+      #5eead4
+    );
+
+  border-radius: 999px;
+
+  transition:
+    width
+    0.3s ease;
+}
+
+@media (
+  max-width: 1100px
+) {
+  .metrics-grid {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
+  .content-grid {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+@media (
+  max-width: 700px
+) {
+  .topbar {
+    padding: 18px;
+
+    align-items:
+      flex-start;
+
+    gap: 16px;
+
+    flex-direction:
+      column;
+  }
+
+  .dashboard {
+    padding: 16px;
+  }
+
+  .metrics-grid,
+  .metrics-grid.secondary {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .traffic-map {
+    min-height: 360px;
+  }
+}
