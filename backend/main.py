@@ -124,3 +124,34 @@ def stop_simulation() -> dict:
     return {
         "message": "Simulation stop requested.",
     }
+
+
+
+
+@app.post("/api/simulation/controller/{controller}")
+def set_simulation_controller(
+    controller: str,
+) -> dict:
+    try:
+        simulation_service.set_controller(
+            controller
+        )
+
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=str(error),
+        )
+
+    except RuntimeError as error:
+        raise HTTPException(
+            status_code=409,
+            detail=str(error),
+        )
+
+    return {
+        "message": (
+            f"Controller set to {controller}."
+        ),
+        "controller": controller,
+    }
