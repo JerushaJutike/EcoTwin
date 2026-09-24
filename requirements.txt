@@ -2,3 +2,5 @@ numpy
 traci
 gymnasium
 stable-baselines3
+fastapi
+uvicorn
