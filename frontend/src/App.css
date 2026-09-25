@@ -1,71 +1,8 @@
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
+/* Comparison Charts */
 
-.ecotwin-dashboard {
-  width: 100%;
-  min-height: 100vh;
-  padding: 40px;
-  box-sizing: border-box;
-  background: #f4f7fb;
-}
-
-.ecotwin-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.ecotwin-header h1 {
-  margin: 0;
-  font-size: 42px;
-  color: #17324d;
-}
-
-.ecotwin-header p {
-  margin-top: 8px;
-  font-size: 18px;
-  color: #5f7183;
-}
-
-.metrics-grid {
+.chart-section {
   max-width: 1100px;
   margin: 0 auto 30px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-}
-
-.metric-card {
-  background: white;
-  border-radius: 14px;
-  padding: 22px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e2e8f0;
-}
-
-.metric-card h3 {
-  margin: 0 0 10px;
-  font-size: 15px;
-  color: #64748b;
-}
-
-.metric-value {
-  margin: 0;
-  font-size: 25px;
-  font-weight: 700;
-  color: #17324d;
-}
-
-.metric-change {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #2563eb;
-}
-
-.map-section {
-  max-width: 1100px;
-  margin: 0 auto;
   background: white;
   padding: 20px;
   border-radius: 14px;
@@ -73,35 +10,35 @@
   box-sizing: border-box;
 }
 
-.map-section h2 {
+.chart-section h2 {
   margin-top: 0;
   color: #17324d;
+  margin-bottom: 20px;
 }
 
-.urban-map {
-  width: 100%;
+.comparison-charts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.individual-chart {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.individual-chart h3 {
+  margin: 5px 0 15px;
+  text-align: center;
+  color: #334155;
+  font-size: 18px;
 }
 
 @media (max-width: 900px) {
-  .metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .ecotwin-dashboard {
-    padding: 25px;
-  }
-}
-
-@media (max-width: 600px) {
-  .metrics-grid {
+  .comparison-charts {
     grid-template-columns: 1fr;
-  }
-
-  .ecotwin-header h1 {
-    font-size: 32px;
-  }
-
-  .ecotwin-dashboard {
-    padding: 15px;
   }
 }
