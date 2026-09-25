@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import ComparisonChart from "./ComparisonChart";
+
 import {
   MapContainer,
   TileLayer,
@@ -65,10 +67,12 @@ function UrbanMap() {
   return (
     <div className="urban-map">
 
+      {/* Dashboard Metrics */}
       <div className="metrics-grid">
 
         <div className="metric-card">
           <h3>Simulation Steps</h3>
+
           <p className="metric-value">
             {comparison.simulation_steps}
           </p>
@@ -76,50 +80,71 @@ function UrbanMap() {
 
         <div className="metric-card">
           <h3>CO₂ Reduction</h3>
+
           <p className="metric-value">
             {comparison.percentage_change.co2.toFixed(2)}%
           </p>
+
           <p className="metric-change">
-            Baseline: {comparison.baseline.total_co2.toFixed(2)}
+            Baseline:{" "}
+            {comparison.baseline.total_co2.toFixed(2)}
             <br />
-            RL: {comparison.rl.total_co2.toFixed(2)}
+            RL:{" "}
+            {comparison.rl.total_co2.toFixed(2)}
           </p>
         </div>
 
         <div className="metric-card">
           <h3>Waiting Time Change</h3>
+
           <p className="metric-value">
             {comparison.percentage_change.waiting_time.toFixed(2)}%
           </p>
+
           <p className="metric-change">
-            Baseline: {comparison.baseline.total_waiting_time.toFixed(2)}
+            Baseline:{" "}
+            {comparison.baseline.total_waiting_time.toFixed(2)}
             <br />
-            RL: {comparison.rl.total_waiting_time.toFixed(2)}
+            RL:{" "}
+            {comparison.rl.total_waiting_time.toFixed(2)}
           </p>
         </div>
 
         <div className="metric-card">
           <h3>Average Speed Change</h3>
+
           <p className="metric-value">
             {comparison.percentage_change.average_speed.toFixed(2)}%
           </p>
+
           <p className="metric-change">
-            Baseline: {comparison.baseline.average_speed.toFixed(2)}
+            Baseline:{" "}
+            {comparison.baseline.average_speed.toFixed(2)}
             <br />
-            RL: {comparison.rl.average_speed.toFixed(2)}
+            RL:{" "}
+            {comparison.rl.average_speed.toFixed(2)}
           </p>
         </div>
 
       </div>
 
+      {/* Baseline vs RL Chart */}
+      <ComparisonChart comparison={comparison} />
+
+      {/* Urban Traffic Map */}
       <div className="map-section">
+
         <h2>Urban Traffic Simulation</h2>
 
         <MapContainer
           center={[18.5204, 73.8567]}
           zoom={14}
-          style={{ height: "500px", width: "100%" }}
+          style={{
+            height: "500px",
+            width: "100%",
+          }}
         >
+
           <TileLayer
             attribution="&copy; OpenStreetMap contributors"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -137,13 +162,19 @@ function UrbanMap() {
               }}
             >
               <Popup>
-                <strong>Vehicle {vehicle.id}</strong>
+                <strong>
+                  Vehicle {vehicle.id}
+                </strong>
+
                 <br />
+
                 CO₂ Level: {vehicle.carbon}
               </Popup>
             </CircleMarker>
           ))}
+
         </MapContainer>
+
       </div>
 
     </div>
