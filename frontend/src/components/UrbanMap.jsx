@@ -79,7 +79,7 @@ function UrbanMap() {
         </div>
 
         <div className="metric-card">
-          <h3>CO₂ Reduction</h3>
+          <h3>CO₂ Change</h3>
 
           <p className="metric-value">
             {comparison.percentage_change.co2.toFixed(2)}%
