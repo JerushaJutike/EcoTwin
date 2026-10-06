@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 import ComparisonChart from "./ComparisonChart";
+import EmissionsChart from "./EmissionsChart";
+import WaitingTimeChart from "./WaitingTimeChart";
+import SpeedChart from "./SpeedChart";
+import ResultsComparisonTable from "./ResultsComparisonTable";
+import RLImpactSection from "./RLImpactSection";
+import SimulationDetails from "./SimulationDetails";
+
+import "./ecotwin-visualizations.css";
 
 import {
   MapContainer,
@@ -236,7 +244,54 @@ function UrbanMap() {
 
       </div>
 
+     
       {/* ================================
+          PERSON 2 — DETAILED ANALYTICS
+      ================================= */}
+
+      <section className="ecotwin-comparison-card">
+        <div className="ecotwin-section-heading">
+          <span className="ecotwin-eyebrow">
+            Detailed Analytics
+          </span>
+
+          <h2>Controller Performance</h2>
+
+          <p>
+            Detailed comparison of baseline and reinforcement-learning
+            simulation results.
+          </p>
+        </div>
+
+        <div className="comparison-charts">
+          <EmissionsChart
+            baseline={comparison.baseline.total_co2}
+            rl={comparison.rl.total_co2}
+          />
+
+          <WaitingTimeChart
+            baseline={comparison.baseline.total_waiting_time}
+            rl={comparison.rl.total_waiting_time}
+          />
+
+          <SpeedChart
+            baseline={comparison.baseline.average_speed}
+            rl={comparison.rl.average_speed}
+          />
+        </div>
+      </section>
+
+      <ResultsComparisonTable comparison={comparison} />
+
+      <RLImpactSection
+        percentageChange={comparison.percentage_change}
+      />
+
+      <SimulationDetails
+        simulationSteps={comparison.simulation_steps}
+      />
+
+       {/* ================================
           MAP
       ================================= */}
 
@@ -284,7 +339,6 @@ function UrbanMap() {
         </MapContainer>
 
       </div>
-
     </div>
   );
 }
