@@ -16,7 +16,7 @@ function UrbanMap() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/results/comparison")
+    fetch(`${import.meta.env.VITE_API_URL}/api/results/comparison`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch EcoTwin results");
