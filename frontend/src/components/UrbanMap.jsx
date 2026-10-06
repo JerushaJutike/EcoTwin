@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 
 import ComparisonChart from "./ComparisonChart";
+import ResultsComparisonTable from "./ResultsComparisonTable";
+import RLImpactSection from "./RLImpactSection";
+import SimulationDetails from "./SimulationDetails";
+import SimulationMap from "./SimulationMap";
 
-import {
-  MapContainer,
-  TileLayer,
-  CircleMarker,
-  Popup,
-} from "react-leaflet";
-
-import "leaflet/dist/leaflet.css";
+import "./ecotwin-visualizations.css";
 
 function UrbanMap() {
   const [comparison, setComparison] = useState(null);
@@ -17,59 +14,78 @@ function UrbanMap() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/results/comparison")
-      .then((response) => {
+    const controller = new AbortController();
+
+    async function loadComparisonResults() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/results/comparison",
+          {
+            signal: controller.signal,
+          }
+        );
+
         if (!response.ok) {
-          throw new Error("Failed to fetch EcoTwin results");
+          throw new Error(
+            `Failed to fetch EcoTwin results (${response.status})`
+          );
         }
 
-        return response.json();
-      })
-      .then((data) => {
+        const data = await response.json();
+
         setComparison(data);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setError(err.message);
+        }
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+      }
+    }
+
+    loadComparisonResults();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  const vehicles = [
-    {
-      id: 1,
-      position: [18.5204, 73.8567],
-      color: "blue",
-      carbon: 42,
-    },
-    {
-      id: 2,
-      position: [18.5225, 73.8585],
-      color: "red",
-      carbon: 78,
-    },
-    {
-      id: 3,
-      position: [18.5185, 73.8545],
-      color: "orange",
-      carbon: 61,
-    },
-  ];
-
   if (loading) {
-    return <p>Loading EcoTwin simulation results...</p>;
+    return (
+      <div className="ecotwin-data-state">
+        <div className="ecotwin-loading-spinner" />
+
+        <p>Loading EcoTwin simulation results...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return (
+      <div className="ecotwin-data-state ecotwin-error-state">
+        <h3>Simulation results unavailable</h3>
+
+        <p>{error}</p>
+
+        <span>
+          Confirm that the EcoTwin API is running on port 8000.
+        </span>
+      </div>
+    );
+  }
+
+  if (!comparison) {
+    return (
+      <div className="ecotwin-data-state">
+        <p>No EcoTwin simulation results available.</p>
+      </div>
+    );
   }
 
   return (
     <div className="urban-map">
-
-      {/* Dashboard Metrics */}
+      {/* Existing dashboard KPI metrics */}
       <div className="metrics-grid">
-
         <div className="metric-card">
           <h3>Simulation Steps</h3>
 
@@ -86,11 +102,9 @@ function UrbanMap() {
           </p>
 
           <p className="metric-change">
-            Baseline:{" "}
-            {comparison.baseline.total_co2.toFixed(2)}
+            Baseline: {comparison.baseline.total_co2.toFixed(2)}
             <br />
-            RL:{" "}
-            {comparison.rl.total_co2.toFixed(2)}
+            RL: {comparison.rl.total_co2.toFixed(2)}
           </p>
         </div>
 
@@ -105,8 +119,7 @@ function UrbanMap() {
             Baseline:{" "}
             {comparison.baseline.total_waiting_time.toFixed(2)}
             <br />
-            RL:{" "}
-            {comparison.rl.total_waiting_time.toFixed(2)}
+            RL: {comparison.rl.total_waiting_time.toFixed(2)}
           </p>
         </div>
 
@@ -118,65 +131,33 @@ function UrbanMap() {
           </p>
 
           <p className="metric-change">
-            Baseline:{" "}
-            {comparison.baseline.average_speed.toFixed(2)}
+            Baseline: {comparison.baseline.average_speed.toFixed(2)}
             <br />
-            RL:{" "}
-            {comparison.rl.average_speed.toFixed(2)}
+            RL: {comparison.rl.average_speed.toFixed(2)}
           </p>
         </div>
-
       </div>
 
-      {/* Baseline vs RL Chart */}
+      {/* Analytics charts */}
       <ComparisonChart comparison={comparison} />
 
-      {/* Urban Traffic Map */}
-      <div className="map-section">
+      {/* Detailed result comparison */}
+      <ResultsComparisonTable
+        comparison={comparison}
+      />
 
-        <h2>Urban Traffic Simulation</h2>
+      {/* RL performance impact */}
+      <RLImpactSection
+        percentageChange={comparison.percentage_change}
+      />
 
-        <MapContainer
-          center={[18.5204, 73.8567]}
-          zoom={14}
-          style={{
-            height: "500px",
-            width: "100%",
-          }}
-        >
+      {/* Simulation configuration */}
+      <SimulationDetails
+        simulationSteps={comparison.simulation_steps}
+      />
 
-          <TileLayer
-            attribution="&copy; OpenStreetMap contributors"
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-          {vehicles.map((vehicle) => (
-            <CircleMarker
-              key={vehicle.id}
-              center={vehicle.position}
-              radius={10}
-              pathOptions={{
-                color: vehicle.color,
-                fillColor: vehicle.color,
-                fillOpacity: 0.8,
-              }}
-            >
-              <Popup>
-                <strong>
-                  Vehicle {vehicle.id}
-                </strong>
-
-                <br />
-
-                CO₂ Level: {vehicle.carbon}
-              </Popup>
-            </CircleMarker>
-          ))}
-
-        </MapContainer>
-
-      </div>
-
+      {/* Urban simulation visualization */}
+      <SimulationMap />
     </div>
   );
 }
