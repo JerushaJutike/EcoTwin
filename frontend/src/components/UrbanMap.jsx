@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import ComparisonChart from "./ComparisonChart";
 
 import {
@@ -67,7 +66,10 @@ function UrbanMap() {
   return (
     <div className="urban-map">
 
-      {/* Dashboard Metrics */}
+      {/* ================================
+          SIMULATION SUMMARY
+      ================================= */}
+
       <div className="metrics-grid">
 
         <div className="metric-card">
@@ -128,10 +130,116 @@ function UrbanMap() {
 
       </div>
 
-      {/* Baseline vs RL Chart */}
-      <ComparisonChart comparison={comparison} />
+      {/* ================================
+          URBAN SIMULATION INFORMATION
+      ================================= */}
 
-      {/* Urban Traffic Map */}
+      <div className="urban-info-card">
+
+        <div className="urban-info-header">
+
+          <div>
+            <span className="urban-label">
+              URBAN SIMULATION
+            </span>
+
+            <h2>Urban Traffic Simulation</h2>
+
+            <p>
+              Real-time urban traffic and carbon monitoring
+            </p>
+          </div>
+
+          <div className="simulation-status">
+            <span className="status-dot"></span>
+            Simulation Completed
+          </div>
+
+        </div>
+
+        <div className="urban-info-grid">
+
+          <div className="urban-info-item">
+            <span>Controller</span>
+            <strong>Reinforcement Learning</strong>
+          </div>
+
+          <div className="urban-info-item">
+            <span>Simulation Steps</span>
+            <strong>{comparison.simulation_steps}</strong>
+          </div>
+
+          <div className="urban-info-item">
+            <span>Vehicles</span>
+            <strong>{vehicles.length}</strong>
+          </div>
+
+          <div className="urban-info-item">
+            <span>System Status</span>
+            <strong className="operational">
+              Operational
+            </strong>
+          </div>
+
+        </div>
+
+        {/* CO₂ LEGEND */}
+
+        <div className="co2-legend">
+
+          <h3>Vehicle CO₂ Level</h3>
+
+          <div className="co2-legend-items">
+
+            <div className="co2-legend-item">
+              <span className="legend-dot low"></span>
+              <span>Low</span>
+            </div>
+
+            <div className="co2-legend-item">
+              <span className="legend-dot medium"></span>
+              <span>Medium</span>
+            </div>
+
+            <div className="co2-legend-item">
+              <span className="legend-dot high"></span>
+              <span>High</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ================================
+          BASELINE VS RL
+      ================================= */}
+
+      <div className="urban-chart-card">
+
+        <div className="urban-chart-header">
+          <div>
+            <span className="urban-label">
+              PERFORMANCE COMPARISON
+            </span>
+
+            <h2>Baseline vs Reinforcement Learning</h2>
+
+            <p>
+              Comparison of the current simulation results
+            </p>
+          </div>
+        </div>
+
+        <ComparisonChart comparison={comparison} />
+
+      </div>
+
+      {/* ================================
+          MAP
+      ================================= */}
+
       <div className="map-section">
 
         <h2>Urban Traffic Simulation</h2>
