@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from fastapi import (
+    APIRouter,
+    HTTPException,
+)
 
 from backend.app.services.results_service import (
     load_comparison_results,
@@ -17,4 +20,17 @@ def get_comparison_results():
     Return baseline vs RL comparison results.
     """
 
-    return load_comparison_results()
+    try:
+        return load_comparison_results()
+
+    except FileNotFoundError as error:
+        raise HTTPException(
+            status_code=404,
+            detail=str(error),
+        ) from error
+
+    except ValueError as error:
+        raise HTTPException(
+            status_code=500,
+            detail=str(error),
+        ) from error

@@ -1,24 +1,24 @@
 {
     "simulation_steps": 200,
     "baseline": {
-        "total_waiting_time": 9902.0,
+        "total_waiting_time": 248.0,
         "total_co2": 974632.7329923729,
         "average_speed": 4.925559561143442
     },
     "rl": {
         "simulation_steps": 200,
-        "total_waiting_time": 957.0,
-        "total_co2": 55453.826687420624,
-        "average_speed": 4.492892433133267
+        "total_waiting_time": 147.0,
+        "total_co2": 770841.1608069834,
+        "average_speed": 5.870759018191502
     },
     "differences": {
-        "waiting_time": -8945.0,
-        "co2": -919178.9063049523,
-        "average_speed": -0.4326671280101744
+        "waiting_time": -101.0,
+        "co2": -203791.57218538958,
+        "average_speed": 0.9451994570480604
     },
     "percentage_change": {
-        "waiting_time": -90.33528580084831,
-        "co2": -94.31028480675351,
-        "average_speed": -8.784121329551704
+        "waiting_time": -40.725806451612904,
+        "co2": -20.909576016362294,
+        "average_speed": 19.189686883588056
     }
 }

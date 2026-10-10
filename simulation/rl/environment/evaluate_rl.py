@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import traci
+
 from simulation.rl.environment.ecotwin_env import EcoTwinEnv
 from simulation.rl.agents.rl_controller import RLController
 
@@ -8,8 +10,12 @@ from simulation.rl.agents.rl_controller import RLController
 class RLEvaluation:
     """
     Evaluate the trained Q-learning controller
-    for the same 200 SUMO seconds used by
-    the fixed-time baseline.
+    for the same number of SUMO seconds used
+    by the fixed-time baseline.
+
+    The RL controller selects a new traffic-light
+    action every decision_interval seconds, while
+    evaluation metrics are sampled every SUMO second.
     """
 
     def __init__(
@@ -20,85 +26,101 @@ class RLEvaluation:
         self.simulation_steps = simulation_steps
         self.decision_interval = decision_interval
 
-        self.decision_count = (
-            simulation_steps // decision_interval
-        )
-
     def run(self):
-        """Run the trained RL controller and collect metrics."""
+        """
+        Run the trained RL controller and collect
+        directly comparable traffic metrics.
+
+        Metrics:
+        - CO2 is sampled for every active vehicle every SUMO second.
+        - Waiting time uses each vehicle's latest accumulated waiting time.
+        - Average speed is calculated across all vehicle-second samples.
+        """
 
         env = EcoTwinEnv()
         controller = RLController()
 
-        total_waiting_time = 0.0
         total_co2 = 0.0
         total_speed = 0.0
         speed_samples = 0
+
+        # Stores the latest accumulated waiting time
+        # observed for every vehicle.
+        final_waiting_times = {}
 
         try:
             state = env.reset()
             rl_state = state["rl_state"]
 
-            for decision_number in range(
-                self.decision_count
+            for simulation_second in range(
+                self.simulation_steps
             ):
-
-                action = controller.choose_action(
-                    rl_state
-                )
-
-                next_state, reward = env.step(
-                    action
-                )
-
-                vehicle_count = next_state[
-                    "vehicle_count"
-                ]
-
-                average_speed = next_state[
-                    "average_speed"
-                ]
-
-                waiting_time = next_state[
-                    "waiting_time"
-                ]
-
-                co2 = next_state[
-                    "co2"
-                ]
-
-                total_waiting_time += waiting_time
-                total_co2 += co2
-
-                if vehicle_count > 0:
-                    total_speed += (
-                        average_speed
-                        * vehicle_count
-                    )
-
-                    speed_samples += (
-                        vehicle_count
-                    )
-
-                rl_state = next_state[
-                    "rl_state"
-                ]
-
+                # The RL agent makes a traffic-light
+                # decision only at the configured interval.
                 if (
-                    (decision_number + 1)
-                    % 5
+                    simulation_second
+                    % self.decision_interval
                     == 0
                 ):
-                    simulation_time = (
-                        (decision_number + 1)
-                        * self.decision_interval
+                    action = controller.choose_action(
+                        rl_state
                     )
 
+                    env.apply_action(
+                        action
+                    )
+
+                # Advance SUMO exactly one second.
+                traci.simulationStep()
+
+                # Read the new environment state
+                # after that one-second simulation step.
+                state = env.get_state()
+
+                vehicle_ids = (
+                    traci.vehicle.getIDList()
+                )
+
+                for vehicle_id in vehicle_ids:
+                    final_waiting_times[
+                        vehicle_id
+                    ] = (
+                        traci.vehicle
+                        .getAccumulatedWaitingTime(
+                            vehicle_id
+                        )
+                    )
+
+                    total_co2 += (
+                        traci.vehicle.getCO2Emission(
+                            vehicle_id
+                        )
+                    )
+
+                    total_speed += (
+                        traci.vehicle.getSpeed(
+                            vehicle_id
+                        )
+                    )
+
+                    speed_samples += 1
+
+                rl_state = state["rl_state"]
+
+                if (
+                    (simulation_second + 1)
+                    % 50
+                    == 0
+                ):
                     print(
                         f"Simulation time: "
-                        f"{simulation_time}/"
+                        f"{simulation_second + 1}/"
                         f"{self.simulation_steps} seconds"
                     )
+
+            total_waiting_time = sum(
+                final_waiting_times.values()
+            )
 
             if speed_samples > 0:
                 overall_average_speed = (
@@ -111,10 +133,13 @@ class RLEvaluation:
             return {
                 "simulation_steps":
                     self.simulation_steps,
+
                 "total_waiting_time":
                     total_waiting_time,
+
                 "total_co2":
                     total_co2,
+
                 "average_speed":
                     overall_average_speed,
             }
@@ -166,6 +191,7 @@ def main():
         print(
             "\nRL Evaluation Results"
         )
+
         print(
             "---------------------"
         )

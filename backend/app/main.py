@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.api.results import router as results_router
 
+from backend.app.websocket.simulation import (
+    router as simulation_websocket_router,
+)
 
 app = FastAPI(
     title="EcoTwin API",
@@ -28,6 +31,10 @@ app.add_middleware(
 
 
 app.include_router(results_router)
+
+app.include_router(
+    simulation_websocket_router
+)
 
 
 @app.get("/")
