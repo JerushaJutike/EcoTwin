@@ -8,7 +8,9 @@ class FixedTimeController:
     Fixed-time traffic-light baseline controller.
 
     This controller keeps the existing SUMO traffic-light
-    timing unchanged and collects basic traffic metrics.
+    timing unchanged and collects traffic metrics using
+    the same per-second sampling strategy as the RL
+    evaluation.
     """
 
     def __init__(
@@ -34,20 +36,28 @@ class FixedTimeController:
         """
         Run SUMO using its existing fixed-time
         traffic-light program.
+
+        Metrics:
+        - CO2 is sampled for every active vehicle every SUMO second.
+        - Waiting time uses each vehicle's latest accumulated waiting time.
+        - Average speed is calculated across all vehicle-second samples.
         """
 
-        total_waiting_time = 0.0
         total_co2 = 0.0
         total_speed = 0.0
         speed_samples = 0
 
-        for _ in range(self.simulation_steps):
+        # Stores the latest accumulated waiting time
+        # observed for every vehicle.
+        final_waiting_times = {}
+
+        for simulation_second in range(self.simulation_steps):
             traci.simulationStep()
 
             vehicle_ids = traci.vehicle.getIDList()
 
             for vehicle_id in vehicle_ids:
-                total_waiting_time += (
+                final_waiting_times[vehicle_id] = (
                     traci.vehicle.getAccumulatedWaitingTime(
                         vehicle_id
                     )
@@ -66,6 +76,17 @@ class FixedTimeController:
                 )
 
                 speed_samples += 1
+
+            if (simulation_second + 1) % 50 == 0:
+                print(
+                    f"Simulation time: "
+                    f"{simulation_second + 1}/"
+                    f"{self.simulation_steps} seconds"
+                )
+
+        total_waiting_time = sum(
+            final_waiting_times.values()
+        )
 
         if speed_samples > 0:
             average_speed = (
@@ -98,7 +119,9 @@ if __name__ == "__main__":
 
         results.save()
 
-        print("\nBaseline results saved successfully.")
+        print(
+            "\nBaseline results saved successfully."
+        )
 
     finally:
         controller.close()
