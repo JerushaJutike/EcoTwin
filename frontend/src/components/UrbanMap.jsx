@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import ComparisonChart from "./ComparisonChart";
 import EmissionsChart from "./EmissionsChart";
@@ -7,6 +10,7 @@ import SpeedChart from "./SpeedChart";
 import ResultsComparisonTable from "./ResultsComparisonTable";
 import RLImpactSection from "./RLImpactSection";
 import SimulationDetails from "./SimulationDetails";
+import CarbonHeatLayer from "./CarbonHeatLayer";
 
 import "./ecotwin-visualizations.css";
 
@@ -26,6 +30,7 @@ const MAP_CENTER = [
 ];
 
 const SUMO_GRID_SIZE = 300;
+
 const MAP_SPAN = 0.01;
 
 
@@ -41,13 +46,15 @@ function convertSumoToLatLng(
 
   const latitude =
     MAP_CENTER[0]
-    + (normalizedY - 0.5)
-    * MAP_SPAN;
+    + (
+      normalizedY - 0.5
+    ) * MAP_SPAN;
 
   const longitude =
     MAP_CENTER[1]
-    + (normalizedX - 0.5)
-    * MAP_SPAN;
+    + (
+      normalizedX - 0.5
+    ) * MAP_SPAN;
 
   return [
     latitude,
@@ -56,7 +63,9 @@ function convertSumoToLatLng(
 }
 
 
-function getVehicleColor(co2) {
+function getVehicleColor(
+  co2,
+) {
   if (co2 > 3000) {
     return "red";
   }
@@ -70,74 +79,108 @@ function getVehicleColor(co2) {
 
 
 function UrbanMap() {
-  const [comparison, setComparison] =
-    useState(null);
+  const [
+    comparison,
+    setComparison,
+  ] = useState(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-  const [error, setError] =
-    useState(null);
+  const [
+    error,
+    setError,
+  ] = useState(null);
 
-  const [liveState, setLiveState] =
-    useState(null);
+  const [
+    liveState,
+    setLiveState,
+  ] = useState(null);
 
-  const [wsStatus, setWsStatus] =
-    useState("connecting");
+  const [
+    wsStatus,
+    setWsStatus,
+  ] = useState(
+    "connecting"
+  );
 
 
   /*
-   * Load completed baseline vs RL results.
+   * Load stored baseline-vs-RL
+   * comparison results.
    */
   useEffect(() => {
     const apiUrl =
-      import.meta.env.VITE_API_URL
+      import.meta.env
+        .VITE_API_URL
       || "http://127.0.0.1:8000";
 
     fetch(
       `${apiUrl}/api/results/comparison`
     )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            "Failed to fetch EcoTwin results"
+      .then(
+        (response) => {
+          if (!response.ok) {
+            throw new Error(
+              "Failed to fetch EcoTwin results"
+            );
+          }
+
+          return response.json();
+        }
+      )
+      .then(
+        (data) => {
+          setComparison(
+            data
+          );
+
+          setLoading(
+            false
           );
         }
+      )
+      .catch(
+        (err) => {
+          setError(
+            err.message
+          );
 
-        return response.json();
-      })
-      .then((data) => {
-        setComparison(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+          setLoading(
+            false
+          );
+        }
+      );
   }, []);
 
 
   /*
-   * Connect to the live SUMO simulation stream.
+   * Connect to the live SUMO
+   * simulation WebSocket.
    */
   useEffect(() => {
     const apiUrl =
-      import.meta.env.VITE_API_URL
+      import.meta.env
+        .VITE_API_URL
       || "http://127.0.0.1:8000";
 
-    const wsBaseUrl = apiUrl
-      .replace(
-        "http://",
-        "ws://"
-      )
-      .replace(
-        "https://",
-        "wss://"
-      );
+    const wsBaseUrl =
+      apiUrl
+        .replace(
+          "http://",
+          "ws://"
+        )
+        .replace(
+          "https://",
+          "wss://"
+        );
 
-    const socket = new WebSocket(
-      `${wsBaseUrl}/ws/simulation`
-    );
+    const socket =
+      new WebSocket(
+        `${wsBaseUrl}/ws/simulation`
+      );
 
 
     socket.onopen = () => {
@@ -197,7 +240,9 @@ function UrbanMap() {
 
     socket.onclose = () => {
       setWsStatus(
-        (currentStatus) => {
+        (
+          currentStatus
+        ) => {
           if (
             currentStatus
             === "completed"
@@ -225,65 +270,73 @@ function UrbanMap() {
 
 
   /*
-   * Convert live SUMO vehicle coordinates
-   * to positions suitable for the Leaflet map.
+   * Convert live SUMO
+   * vehicle coordinates
+   * into Leaflet positions.
    */
   const vehicles =
-    liveState?.vehicles?.map(
-      (vehicle) => ({
-        ...vehicle,
+    liveState
+      ?.vehicles
+      ?.map(
+        (
+          vehicle
+        ) => ({
+          ...vehicle,
 
-        position:
-          convertSumoToLatLng(
-            vehicle.x,
-            vehicle.y,
-          ),
+          position:
+            convertSumoToLatLng(
+              vehicle.x,
+              vehicle.y,
+            ),
 
-        color:
-          getVehicleColor(
-            vehicle.co2
-          ),
-      })
-    ) ?? [];
+          color:
+            getVehicleColor(
+              vehicle.co2
+            ),
+        })
+      )
+    ?? [];
 
 
-  const simulationStatus = (() => {
-    if (
-      wsStatus
-      === "connected"
-    ) {
-      return "Simulation Running";
-    }
+  const simulationStatus =
+    (() => {
+      if (
+        wsStatus
+        === "connected"
+      ) {
+        return "Simulation Running";
+      }
 
-    if (
-      wsStatus
-      === "completed"
-    ) {
-      return "Simulation Completed";
-    }
+      if (
+        wsStatus
+        === "completed"
+      ) {
+        return "Simulation Completed";
+      }
 
-    if (
-      wsStatus
-      === "error"
-    ) {
-      return "Simulation Error";
-    }
+      if (
+        wsStatus
+        === "error"
+      ) {
+        return "Simulation Error";
+      }
 
-    if (
-      wsStatus
-      === "disconnected"
-    ) {
-      return "Disconnected";
-    }
+      if (
+        wsStatus
+        === "disconnected"
+      ) {
+        return "Disconnected";
+      }
 
-    return "Connecting...";
-  })();
+      return "Connecting...";
+    })();
 
 
   if (loading) {
     return (
       <p>
-        Loading EcoTwin simulation results...
+        Loading EcoTwin
+        simulation results...
       </p>
     );
   }
@@ -491,7 +544,9 @@ function UrbanMap() {
                   ?.simulation_time
                 ?? 0
               }
+
               {" / "}
+
               {
                 comparison
                   .simulation_steps
@@ -506,7 +561,9 @@ function UrbanMap() {
             </span>
 
             <strong>
-              {vehicles.length}
+              {
+                vehicles.length
+              }
             </strong>
           </div>
 
@@ -540,6 +597,7 @@ function UrbanMap() {
                   ?.toFixed(2)
                 ?? "0.00"
               }
+              {" mg/s"}
             </strong>
           </div>
 
@@ -673,15 +731,18 @@ function UrbanMap() {
 
         </div>
 
+
         <ComparisonChart
-          comparison={comparison}
+          comparison={
+            comparison
+          }
         />
 
       </div>
 
 
       {/* ================================
-          PERSON 2 — DETAILED ANALYTICS
+          DETAILED ANALYTICS
       ================================= */}
 
       <section className="ecotwin-comparison-card">
@@ -697,8 +758,9 @@ function UrbanMap() {
           </h2>
 
           <p>
-            Detailed comparison of baseline and
-            reinforcement-learning simulation results.
+            Detailed comparison of
+            baseline and reinforcement-learning
+            simulation results.
           </p>
 
         </div>
@@ -719,6 +781,7 @@ function UrbanMap() {
             }
           />
 
+
           <WaitingTimeChart
             baseline={
               comparison
@@ -731,6 +794,7 @@ function UrbanMap() {
                 .total_waiting_time
             }
           />
+
 
           <SpeedChart
             baseline={
@@ -751,7 +815,9 @@ function UrbanMap() {
 
 
       <ResultsComparisonTable
-        comparison={comparison}
+        comparison={
+          comparison
+        }
       />
 
 
@@ -772,18 +838,24 @@ function UrbanMap() {
 
 
       {/* ================================
-          LIVE MAP
+          LIVE MAP + CARBON HEATMAP
       ================================= */}
 
       <div className="map-section">
 
         <h2>
-          Live Urban Traffic Simulation
+          Live Urban Traffic
+          & Carbon Heatmap
         </h2>
 
+
         <MapContainer
-          center={MAP_CENTER}
-          zoom={15}
+          center={
+            MAP_CENTER
+          }
+          zoom={
+            15
+          }
           style={{
             height: "500px",
             width: "100%",
@@ -791,92 +863,114 @@ function UrbanMap() {
         >
 
           <TileLayer
-            attribution="&copy; OpenStreetMap contributors"
+            attribution={
+              "&copy; OpenStreetMap contributors"
+            }
             url={
               "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             }
           />
 
 
-          {vehicles.map(
-            (vehicle) => (
-              <CircleMarker
-                key={vehicle.id}
-                center={
-                  vehicle.position
-                }
-                radius={8}
-                pathOptions={{
-                  color:
-                    vehicle.color,
+          <CarbonHeatLayer
+            vehicles={
+              vehicles
+            }
+          />
 
-                  fillColor:
-                    vehicle.color,
 
-                  fillOpacity:
-                    0.8,
-                }}
-              >
-
-                <Popup>
-
-                  <strong>
-                    {vehicle.id}
-                  </strong>
-
-                  <br />
-
-                  Speed:{" "}
-                  {
-                    vehicle
-                      .speed
-                      .toFixed(2)
+          {
+            vehicles.map(
+              (
+                vehicle
+              ) => (
+                <CircleMarker
+                  key={
+                    vehicle.id
                   }
-                  {" m/s"}
-
-                  <br />
-
-                  CO₂:{" "}
-                  {
-                    vehicle
-                      .co2
-                      .toFixed(2)
+                  center={
+                    vehicle.position
                   }
-                  {" mg/s"}
-
-                  <br />
-
-                  Waiting:{" "}
-                  {
-                    vehicle
-                      .waiting_time
-                      .toFixed(2)
+                  radius={
+                    8
                   }
-                  {" s"}
+                  pathOptions={{
+                    color:
+                      vehicle.color,
 
-                  <br />
+                    fillColor:
+                      vehicle.color,
 
-                  SUMO X:{" "}
-                  {
-                    vehicle
-                      .x
-                      .toFixed(2)
-                  }
+                    fillOpacity:
+                      0.85,
 
-                  <br />
+                    weight:
+                      2,
+                  }}
+                >
 
-                  SUMO Y:{" "}
-                  {
-                    vehicle
-                      .y
-                      .toFixed(2)
-                  }
+                  <Popup>
 
-                </Popup>
+                    <strong>
+                      {
+                        vehicle.id
+                      }
+                    </strong>
 
-              </CircleMarker>
+                    <br />
+
+                    Speed:{" "}
+                    {
+                      vehicle
+                        .speed
+                        .toFixed(2)
+                    }
+                    {" m/s"}
+
+                    <br />
+
+                    CO₂:{" "}
+                    {
+                      vehicle
+                        .co2
+                        .toFixed(2)
+                    }
+                    {" mg/s"}
+
+                    <br />
+
+                    Waiting:{" "}
+                    {
+                      vehicle
+                        .waiting_time
+                        .toFixed(2)
+                    }
+                    {" s"}
+
+                    <br />
+
+                    SUMO X:{" "}
+                    {
+                      vehicle
+                        .x
+                        .toFixed(2)
+                    }
+
+                    <br />
+
+                    SUMO Y:{" "}
+                    {
+                      vehicle
+                        .y
+                        .toFixed(2)
+                    }
+
+                  </Popup>
+
+                </CircleMarker>
+              )
             )
-          )}
+          }
 
         </MapContainer>
 
